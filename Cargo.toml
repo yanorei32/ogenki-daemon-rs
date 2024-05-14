@@ -2,6 +2,6 @@
 resolver = "2"
 
 members = [
-	"ogenki-daemon-re",
+	"ogenki-daemon-rs",
 	"twelite-serial",
 ]

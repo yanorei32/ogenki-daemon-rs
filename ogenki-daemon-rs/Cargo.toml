@@ -1,5 +1,5 @@
 [package]
-name = "ogenki-daemon-re"
+name = "ogenki-daemon-rs"
 version = "0.1.0"
 edition = "2021"
 
