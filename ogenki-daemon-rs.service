@@ -1,0 +1,12 @@
+[Unit]
+Description=Ogenki Dameon service
+
+[Service]
+ExecStart=/usr/local/bin/ogenki-daemon-rs
+Environment="USERNAME=admin"
+Environment="PASSWORD=password"
+Environment="SERIAL_PORT=/dev/ttyAMA0"
+Environment="URL=https://example.com/"
+
+[Install]
+WantedBy=default.target
