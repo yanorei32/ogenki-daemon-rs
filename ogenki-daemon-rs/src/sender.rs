@@ -36,7 +36,8 @@ impl WebBackend {
                 .text("changed", notify.di1_changed().to_string()),
         )
         .send()
-        .await?;
+        .await?
+        .error_for_status()?;
 
         Ok(())
     }

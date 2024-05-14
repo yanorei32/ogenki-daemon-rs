@@ -1,6 +1,6 @@
 mod cli;
-mod sender;
 mod format;
+mod sender;
 
 use std::io::{BufRead, BufReader};
 
@@ -8,8 +8,8 @@ use clap::Parser;
 use serialport::{DataBits, FlowControl, Parity, StopBits};
 
 use cli::Cli;
-use sender::*;
 use format::*;
+use sender::*;
 use twelite_serial::*;
 
 #[tokio::main(flavor = "current_thread")]
@@ -22,16 +22,24 @@ async fn main() {
         .data_bits(DataBits::Eight)
         .parity(Parity::None)
         .stop_bits(StopBits::One)
+        .timeout(std::time::Duration::from_secs(10))
         .open()
         .expect("Failed to open serial port");
 
     let serial = BufReader::new(serial);
 
     for line in serial.lines() {
-        let line = line.unwrap();
-
-        let Ok(status) = StatusNotify::decode_str(&line) else {
+        let Ok(line) = line else {
             continue;
+        };
+
+        let status = match StatusNotify::decode_str(&line) {
+            Ok(v) => v,
+            Err(e) => {
+                eprintln!("{e}");
+                eprintln!("Buffer: {line}");
+                continue;
+            }
         };
 
         if let Err(v) = status.validate() {
