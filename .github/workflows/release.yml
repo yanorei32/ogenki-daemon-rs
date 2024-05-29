@@ -60,11 +60,6 @@ jobs:
       - uses: actions-rs/cargo@v1.0.3
         with:
           command: build
-          args: --release --target x86_64-unknown-linux-gnu
-
-      - uses: actions-rs/cargo@v1.0.3
-        with:
-          command: build
           args: --release --target arm-unknown-linux-musleabihf
 
       - run: |
@@ -83,7 +78,7 @@ jobs:
               VERSION_NAME=${VERSION_NAME:1}
           fi
           echo "$VERSION_NAME" > ogenki-daemon/VERSION.txt
-          cp LICENSE README.md ogenki-daemon/
+          cp ogenki-daemon-rs.service LICENSE README.md ogenki-daemon/
           cp target/arm-unknown-linux-musleabihf/release/ogenki-daemon-rs ogenki-daemon/
           zip -r ogenki-daemon.zip ogenki-daemon
 
