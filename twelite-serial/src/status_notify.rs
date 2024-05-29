@@ -489,11 +489,14 @@ impl StatusNotify {
 
     /// See [`StatusNotify::ad_fix`].
     pub fn ad1_fix(&self) -> u8 {
+        #![allow(clippy::erasing_op)]
+        #![allow(clippy::identity_op)]
         (self.ad_fix() >> (2 * 0)) & 0b11
     }
 
     /// See [`StatusNotify::ad_fix`].
     pub fn ad2_fix(&self) -> u8 {
+        #![allow(clippy::identity_op)]
         (self.ad_fix() >> (2 * 1)) & 0b11
     }
 
@@ -553,7 +556,7 @@ impl StatusNotify {
     /// この二の補数は0xB1 です。（つまり 0x4F + 0xB1 = 0）
     pub fn validate_checksum(&self) -> Result<(), u8> {
         let checksum = self.buf.iter().fold(0u8, |s, v| s.wrapping_add(*v));
-        (checksum == 0).then(|| ()).ok_or(checksum)
+        (checksum == 0).then_some(()).ok_or(checksum)
     }
 
     /// Check the protocol version is equal to `0x01`.
@@ -563,7 +566,7 @@ impl StatusNotify {
     /// If you need validate totally, you can use [`StatusNotify::validate`].
     pub fn validate_protocol_version(&self) -> Result<(), u8> {
         let version = self.protocol_version();
-        (version == 0x01).then(|| ()).ok_or(version)
+        (version == 0x01).then_some(()).ok_or(version)
     }
 
     /// Check the command value is equal to `0x81`.
@@ -573,7 +576,7 @@ impl StatusNotify {
     /// If you need validate totally, you can use [`StatusNotify::validate`].
     pub fn validate_command(&self) -> Result<(), u8> {
         let command = self.command();
-        (command == 0x81).then(|| ()).ok_or(command)
+        (command == 0x81).then_some(()).ok_or(command)
     }
 
 
@@ -584,22 +587,22 @@ impl StatusNotify {
     /// If you need validate totally, you can use [`StatusNotify::validate`].
     pub fn validate_relay_count(&self) -> Result<(), u8> {
         let relay_count = self.relay_count();
-        (relay_count <= 3).then(|| ()).ok_or(relay_count)
+        (relay_count <= 3).then_some(()).ok_or(relay_count)
     }
 
     /// Validate totally.
     pub fn validate(&self) -> Result<(), ValidateError> {
         self.validate_checksum()
-            .map_err(|checksum| ValidateError::InvalidChecksum(checksum))?;
+            .map_err(ValidateError::InvalidChecksum)?;
 
         self.validate_protocol_version()
-            .map_err(|version| ValidateError::InvalidProtocolVersion(version))?;
+            .map_err(ValidateError::InvalidProtocolVersion)?;
 
         self.validate_command()
-            .map_err(|command| ValidateError::InvalidCommand(command))?;
+            .map_err(ValidateError::InvalidCommand)?;
 
         self.validate_relay_count()
-            .map_err(|count| ValidateError::InvalidRelayCount(count))?;
+            .map_err(ValidateError::InvalidRelayCount)?;
 
         Ok(())
     }

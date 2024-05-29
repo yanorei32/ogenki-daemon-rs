@@ -21,7 +21,7 @@ impl WebBackend {
 
         let ctx = match self.backend.username {
             Some(_) => ctx.basic_auth(
-                &self.backend.username.as_ref().unwrap(),
+                self.backend.username.as_ref().unwrap(),
                 self.backend.password.as_ref(),
             ),
             None => ctx,
@@ -56,7 +56,7 @@ impl Sender {
                 println!("         entering dry-run mode.");
                 Self::Nothing
             }
-            Some(_) => Self::Web(WebBackend::new_from_backend(&backend)),
+            Some(_) => Self::Web(WebBackend::new_from_backend(backend)),
         }
     }
 
