@@ -89,7 +89,6 @@ jobs:
           tag_name: nightly-${{ github.sha }}
           prerelease: true
           fail_on_unmatched_files: true
-          name: "Development Build"
           files: |
             ogenki-daemon.zip
 
